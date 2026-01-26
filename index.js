@@ -4,6 +4,7 @@
 import fs from "fs/promises";
 import { join } from "path";
 import { resetPosts } from "./blogService.js";
+import { fileURLToPath } from "url";
 
 /**
  * Executes a single blog command object.
@@ -76,15 +77,26 @@ export async function processCommand(cmd) {
  *
  * This section is required for autograding and testing.
  */
-if (process.argv[1] === new URL(import.meta.url).pathname) {
+// if (process.argv[1] === new URL(import.meta.url).pathname) {
+//   const commandsFilePath = join(process.cwd(), "commands.json");
+
+//   const data = await fs.readFile(commandsFilePath, "utf-8");
+//   const commands = JSON.parse(data);
+
+//   for (const cmd of commands) {
+//     await processCommand(cmd);
+//   }
+// }
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const commandsFilePath = join(process.cwd(), "commands.json");
-
-  const data = await fs.readFile(commandsFilePath, "utf-8");
-  const commands = JSON.parse(data);
-
-  for (const cmd of commands) {
-    await processCommand(cmd);
+  try {
+    const data = await fs.readFile(commandsFilePath, "utf-8");
+    const commands = JSON.parse(data);
+    for (const cmd of commands) {
+      await processCommand(cmd);
+    }
+  } catch (error) {
+    console.error("Error processing commands:", error);
   }
 }
-
-processCommand({ action: "reset" });
