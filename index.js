@@ -3,7 +3,14 @@
 
 import fs from "fs/promises";
 import { join } from "path";
-import { createPost, readPost, resetPosts } from "./blogService.js";
+import {
+  createPost,
+  deletePost,
+  readPost,
+  resetPosts,
+  updatePost,
+  listPosts,
+} from "./blogService.js";
 import { fileURLToPath } from "url";
 
 /**
@@ -36,7 +43,7 @@ export async function processCommand(cmd) {
         console.log("Title and content must be provided");
       } else {
         const response = await createPost(cmd.title, cmd.content);
-        console.log(`Created post: ${response}`);
+        console.log(`Created post: ${response.id} : ${response.title}`);
       }
       break;
     }
@@ -46,7 +53,9 @@ export async function processCommand(cmd) {
       // If not found, log "Post <id> not found"
       const response = await readPost(cmd.id);
       if (response) {
-        console.log(`Post ${response}`);
+        console.log(
+          `Post ${response.id}: ${response.title} - ${response.content}`,
+        );
       } else {
         console.log(`Post ${cmd.id} not found`);
       }
@@ -58,17 +67,35 @@ export async function processCommand(cmd) {
       // Update the post if it exists
       // Log "Post <id> updated" if successful
       // Log "Post <id> not found" if ID does not exist
+      if (!cmd.title && !cmd.content) {
+        console.log(`Either title or content must be provided `);
+      } else {
+        const success = await updatePost(cmd.id, cmd.title, cmd.content);
+        if (success) {
+          console.log(`Post ${cmd.id} updated`);
+        } else {
+          console.log(`Post ${cmd.id} not found`);
+        }
+      }
       break;
     }
     case "delete": {
       // Delete a post by ID
       // Log "Post <id> deleted" if successful
       // Log "Post <id> not found" if ID does not exist
+      const deleteF = await deletePost(cmd.id);
+      if (deleteF) {
+        console.log(`Post ${cmd.id} deleted`);
+      } else {
+        console.log(`Post ${cmd.id} not found`);
+      }
       break;
     }
     case "list": {
       // Lists all posts as an array of objects
       // Logs: "All posts: [<array of post objects>]"
+      const response = await listPosts();
+      console.log(`All posts:`, response);
       break;
     }
     case "exit": {
