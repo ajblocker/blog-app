@@ -15,6 +15,7 @@ export async function resetPosts() {
     nextId: 1,
     posts: [],
   };
+  //brings in string from JSON file
   await fs.writeFile(postsFile, JSON.stringify(data));
   return `Post reset`;
 }
@@ -25,7 +26,37 @@ export async function resetPosts() {
  * @param {string} content - Post content
  * @returns {object} The newly created post object
  */
-export async function createPost(title, content) {}
+export async function createPost(title, content) {
+  //read the file (JSON.parse)
+  //know the length of the file (nextId + 1) and date timestamp
+  //create the new post with title, id, and content with an object
+  //push the file
+  //write the file (JSON.stringify)
+  //return the new post object
+  //?? where writing of the file should happen? in the function or index??
+  try {
+    //read the file
+    const read = await fs.readFile(postsFile, "utf8");
+    const posts = JSON.parse(read);
+    //determine the nextId
+    const nextId = posts.length + 1;
+    //creates a new post object
+    const newPost = {
+      id: nextId,
+      title: title,
+      content: content,
+      createdAt: new Date(),
+      ...postsFile,
+    };
+    //add/push new content to post
+    posts.push(newPost);
+    //write to file
+    await fs.writeFile(postsFile, JSON.stringify(newPost));
+    return newPost;
+  } catch (error) {
+    console.log(`An error occurred logging ${error}`);
+  }
+}
 
 /**
  * Find and return a post by its ID.
@@ -54,4 +85,8 @@ export async function deletePost(id) {}
  * Return all posts as an array of objects.
  * @returns {Array<object>} Array of all post objects
  */
-export async function listPosts() {}
+export async function listPosts() {
+  //read file
+  //JSONparse the file
+  //return the data
+}

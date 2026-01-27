@@ -3,7 +3,7 @@
 
 import fs from "fs/promises";
 import { join } from "path";
-import { resetPosts } from "./blogService.js";
+import { createPost, resetPosts } from "./blogService.js";
 import { fileURLToPath } from "url";
 
 /**
@@ -29,6 +29,15 @@ export async function processCommand(cmd) {
       // If missing, log "Title and content must be provided"
       // Otherwise, create a new post with a unique ID and timestamp
       // Logs: "Created post <id>: <title>"
+      //call function created in blogService
+      //pass in cmd.title / cmd.content
+      //console.log
+      if (!cmd.title && cmd.content) {
+        console.log("Title and content must be provided");
+      } else {
+        createPost(cmd.title, cmd.content);
+        console.log(`Created post: ${createPost()}`);
+      }
       break;
     }
     case "read": {
@@ -59,10 +68,10 @@ export async function processCommand(cmd) {
     case "exit": {
       console.log("Exiting program");
       process.exit(0);
+      break;
     }
     default: {
       console.log(`Unknown action: ${cmd.action}`);
-      break;
     }
   }
 }
