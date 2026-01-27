@@ -3,7 +3,7 @@
 
 import fs from "fs/promises";
 import { join } from "path";
-import { createPost, resetPosts } from "./blogService.js";
+import { createPost, readPost, resetPosts } from "./blogService.js";
 import { fileURLToPath } from "url";
 
 /**
@@ -32,11 +32,11 @@ export async function processCommand(cmd) {
       //call function created in blogService
       //pass in cmd.title / cmd.content
       //console.log
-      if (!cmd.title && cmd.content) {
+      if (!cmd.title || !cmd.content) {
         console.log("Title and content must be provided");
       } else {
-        createPost(cmd.title, cmd.content);
-        console.log(`Created post: ${createPost()}`);
+        const response = await createPost(cmd.title, cmd.content);
+        console.log(`Created post: ${response}`);
       }
       break;
     }
@@ -44,6 +44,12 @@ export async function processCommand(cmd) {
       // Look up a post by ID
       // If found, log "Post <id>: <title> - <content>"
       // If not found, log "Post <id> not found"
+      const response = await readPost(cmd.id);
+      if (response) {
+        console.log(`Post ${response}`);
+      } else {
+        console.log(`Post ${cmd.id} not found`);
+      }
       break;
     }
     case "update": {

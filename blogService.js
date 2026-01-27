@@ -37,21 +37,31 @@ export async function createPost(title, content) {
   try {
     //read the file
     const read = await fs.readFile(postsFile, "utf8");
-    const posts = JSON.parse(read);
-    //determine the nextId
-    const nextId = posts.length + 1;
+    const data = JSON.parse(read);
+    //nextId in file = 1
+    const currentNextId = data.nextId;
+    //empty array []
+    let posts = data.posts;
+    console.log(data, currentNextId, posts);
     //creates a new post object
     const newPost = {
-      id: nextId,
+      //new id
+      id: currentNextId,
       title: title,
       content: content,
       createdAt: new Date(),
-      ...postsFile,
     };
     //add/push new content to post
     posts.push(newPost);
+    //determine the nextId and increase by 1
+    const nextId = posts.length + 1;
+    //build new file base with new post
+    const newData = {
+      nextId: nextId,
+      posts: posts,
+    };
     //write to file
-    await fs.writeFile(postsFile, JSON.stringify(newPost));
+    await fs.writeFile(postsFile, JSON.stringify(newData));
     return newPost;
   } catch (error) {
     console.log(`An error occurred logging ${error}`);
@@ -63,7 +73,22 @@ export async function createPost(title, content) {
  * @param {number} id - Post ID
  * @returns {object|undefined} The post if found, otherwise undefined
  */
-export async function readPost(id) {}
+export async function readPost(id) {
+  try {
+    //read the file
+    const read = await fs.readFile(postsFile, "utf8");
+    const data = JSON.parse(read);
+    //find the post with matching id
+    const findPost = data.find(function (post) {
+      //compare postId
+      return post.id === id;
+    });
+    return findPost;
+  } catch (error) {
+    console.log(`An error occurred logging ${error}`);
+  }
+  return undefined;
+}
 
 /**
  * Update a post's title and/or content.

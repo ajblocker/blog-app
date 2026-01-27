@@ -1,1 +1,1 @@
-{"nextId":1,"posts":[]}
+{"nextId":3,"posts":[{"id":1,"title":"My First Post","content":"Hello World!","createdAt":"2026-01-27T20:13:03.372Z"},{"id":2,"title":"Learning Node.js","content":"Node.js is fun.","createdAt":"2026-01-27T20:13:03.376Z"}]}
