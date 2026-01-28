@@ -43,7 +43,7 @@ export async function processCommand(cmd) {
         console.log("Title and content must be provided");
       } else {
         const response = await createPost(cmd.title, cmd.content);
-        console.log(`Created post: ${response.id} : ${response.title}`);
+        console.log(`Created post: ${response.id}: ${response.title}`);
       }
       break;
     }
@@ -67,7 +67,10 @@ export async function processCommand(cmd) {
       // Update the post if it exists
       // Log "Post <id> updated" if successful
       // Log "Post <id> not found" if ID does not exist
-      if (!cmd.title && !cmd.content) {
+      if (
+        (!cmd.title || cmd.title === "") &&
+        (!cmd.content || cmd.content === "")
+      ) {
         console.log(`Either title or content must be provided `);
       } else {
         const success = await updatePost(cmd.id, cmd.title, cmd.content);

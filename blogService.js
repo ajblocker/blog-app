@@ -43,10 +43,8 @@ export async function createPost(title, content) {
     const currentNextId = data.nextId;
     //empty array []
     let posts = data.posts;
-    console.log(data, currentNextId, posts);
     //creates a new post object
     const newPost = {
-      //new id
       id: currentNextId,
       title: title,
       content: content,
@@ -55,7 +53,7 @@ export async function createPost(title, content) {
     //add/push new content to post
     posts.push(newPost);
     //determine the nextId and increase by 1
-    const nextId = posts.length + 1;
+    const nextId = currentNextId + 1;
     //build new file base with new post
     const newData = {
       nextId: nextId,
@@ -116,11 +114,11 @@ export async function updatePost(id, newTitle, newContent) {
     }
     //update the title
     if (newTitle !== undefined) {
-      return (post.title = newTitle);
+      post.title = newTitle;
     }
     //update the content
     if (newContent !== undefined) {
-      return (post.content = newContent);
+      post.content = newContent;
     }
     //write to file and bring in string from JSON file
     await fs.writeFile(postsFile, JSON.stringify(data), "utf8");
@@ -143,16 +141,21 @@ export async function deletePost(id) {
     //parse into an object
     const data = JSON.parse(read);
     //filter everything except id
-    const post = data.posts.filter(function (post) {
-      return post.id !== id;
+    const findI = data.posts.findIndex(function (post) {
+      return post.id === id;
     });
-    if (post) {
-      return true;
-    } else {
-      false;
+    //checks if any posts not found
+    if (findI === -1) {
+      return false;
     }
+    //modifies the array and remove the post from the array
+    data.posts.splice(findI, 1);
+    //write to file and bring in string from JSON file
+    await fs.writeFile(postsFile, JSON.stringify(data), "utf8");
+    return true;
   } catch (error) {
     console.log(`An error occurred logging ${error}`);
+    return false;
   }
 }
 
