@@ -3,6 +3,7 @@
 
 import fs from "fs/promises";
 import { join } from "path";
+import { format } from "date-fns";
 
 // Filepath for posts.json. Use this for reading/writing posts.
 const postsFile = join(process.cwd(), "posts.json");
@@ -11,6 +12,7 @@ const postsFile = join(process.cwd(), "posts.json");
  * Reset posts.json: clear all posts and set nextId back to 1.
  */
 export async function resetPosts() {
+  //posts is empty
   const data = {
     nextId: 1,
     posts: [],
@@ -41,14 +43,14 @@ export async function createPost(title, content) {
     const data = JSON.parse(read);
     //nextId in file = 1
     const currentNextId = data.nextId;
-    //empty array []
+    //brings in empty array []
     let posts = data.posts;
     //creates a new post object
     const newPost = {
       id: currentNextId,
       title: title,
       content: content,
-      createdAt: new Date(),
+      createdAt: format(new Date(), "y-M-d h:m aaa"),
     };
     //add/push new content to post
     posts.push(newPost);
@@ -76,7 +78,7 @@ export async function readPost(id) {
   try {
     //read the file
     const read = await fs.readFile(postsFile, "utf8");
-    //parse into an object
+    //parse and convert text into an object
     const data = JSON.parse(read);
     //find the post with matching id
     const findPost = data.posts.find(function (post) {
@@ -101,7 +103,7 @@ export async function updatePost(id, newTitle, newContent) {
   try {
     //read the file
     const read = await fs.readFile(postsFile, "utf8");
-    //parse into an object
+    //parse and convert text into an object
     const data = JSON.parse(read);
 
     //find posts with matching id
@@ -138,9 +140,9 @@ export async function deletePost(id) {
   try {
     //read the file
     const read = await fs.readFile(postsFile, "utf8");
-    //parse into an object
+    //parse and convert text into an object
     const data = JSON.parse(read);
-    //filter everything except id
+    //check to see if id is valid
     const findI = data.posts.findIndex(function (post) {
       return post.id === id;
     });
@@ -148,10 +150,22 @@ export async function deletePost(id) {
     if (findI === -1) {
       return false;
     }
+    //makes a new array and filter through the post id
+    const filteredPosts = data.posts.filter(function (post) {
+      return post.id !== id;
+    });
+
+    //recreate the new updated data object
+    //rewrites to the post
+    const newData = {
+      nextId: data.nextId,
+      posts: filteredPosts,
+    };
+
     //modifies the array and remove the post from the array
     data.posts.splice(findI, 1);
     //write to file and bring in string from JSON file
-    await fs.writeFile(postsFile, JSON.stringify(data), "utf8");
+    await fs.writeFile(postsFile, JSON.stringify(newData), "utf8");
     return true;
   } catch (error) {
     console.log(`An error occurred logging ${error}`);
@@ -167,7 +181,7 @@ export async function listPosts() {
   try {
     //read the file
     const read = await fs.readFile(postsFile, "utf8");
-    //parse into an object
+    //parse and convert text into an object
     const data = JSON.parse(read);
     //return the posts array
     return data.posts;
