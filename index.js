@@ -43,7 +43,7 @@ export async function processCommand(cmd) {
         console.log("Title and content must be provided");
       } else {
         const response = await createPost(cmd.title, cmd.content);
-        console.log(`Created post: ${response.id}: ${response.title}`);
+        console.log(`Created post ${response.id}: ${response.title}`);
       }
       break;
     }
